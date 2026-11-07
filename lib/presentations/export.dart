@@ -1,0 +1,12 @@
+export  'package:flutter/material.dart';
+export  'package:get/get.dart';
+export  'package:qalbi/presentations/splash_view/splash_controller.dart';
+export  '../../utils/app_assets.dart';
+export  '../../utils/app_colors.dart';
+export  '../../utils/app_text.dart';
+export  'package:sizer/sizer.dart' show SizerExt;
+export  'package:qalbi/utils/app_text_style.dart';
+export  'package:flutter/services.dart';
+export  '../../core/routes_config/routes.dart';
+export  'package:qalbi/presentations/onboarding_view/onboarding_controller.dart';
+export  'package:qalbi/presentations/bottom_nav_view/bottom_nav_controller.dart';

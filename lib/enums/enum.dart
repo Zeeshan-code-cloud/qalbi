@@ -1,0 +1,1 @@
+enum NavType {fromBottomNavTab, fromHomeTile}
