@@ -95,7 +95,7 @@ class HomeView extends GetView<HomeController> {
                   AppAssets.settingIcon,
                   height: 4.h,
                   colorFilter: ColorFilter.mode(
-                    AppColors.icon,
+                    AppColors.lightGold,
                     BlendMode.srcIn,
                   ),
                 ),

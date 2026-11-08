@@ -1,11 +1,10 @@
-  import 'package:qalbi/core/localizations/app_localizations/language_controller.dart';
+import 'package:qalbi/core/localizations/app_localizations/language_controller.dart';
 import 'package:qalbi/core/routes_config/app_pages.dart';
- import 'package:qalbi/presentations/export.dart';
+import 'package:qalbi/presentations/export.dart';
 import 'package:sizer/sizer.dart';
 import 'core/localizations/app_localizations/app_languages.dart';
 import 'core/localizations/app_localizations/app_translations.dart';
 import 'package:flutter_localization/flutter_localization.dart';
-
 import 'core/theme/theme_controller.dart';
 
   void main() async {
@@ -16,8 +15,7 @@ import 'core/theme/theme_controller.dart';
   await languageC.loadLanguage();
   final themeC = Get.put(ThemeController(), permanent: true);
     themeC.loadTheme();
-
-  runApp(  MyApp());
+   runApp(  MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -25,8 +23,7 @@ class MyApp extends StatelessWidget {
    MyApp({super.key});
 
   final FlutterLocalization localization = FlutterLocalization.instance;
-
-  @override
+   @override
   Widget build(BuildContext context) {
     final languageC = Get.find<LanguageController>();
     final themeC = Get.find<ThemeController>();
