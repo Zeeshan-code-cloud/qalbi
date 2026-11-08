@@ -1,51 +1,63 @@
 import 'package:get/get.dart';
+import 'package:qalbi/presentations/holy_quran/holly_quran_binding.dart';
+import 'package:qalbi/presentations/holy_quran/holy_quran_vew.dart';
+import 'package:qalbi/presentations/holy_quran/repository/ayah_detail_entity.dart';
+import 'package:qalbi/presentations/holy_quran/repository/get_all_useCases.dart';
+import 'package:qalbi/presentations/holy_quran/repository/surah_entity.dart';
 
 import '../export.dart';
+import 'data/surah_model.dart';
 
 class HollyQuranController  extends GetxController{
+  late GetAllUseCases getAllUseCases;
+  HollyQuranController({required this.getAllUseCases});
   final searchController = TextEditingController();
 
   final RxInt selectedTab = 0.obs;
   final RxBool isSearching = false.obs;
   final RxString searchQuery = ''.obs;
+  RxBool allSurachFetching = false.obs;
+  RxBool surahFetching = false.obs;
+  final RxList<SurahEntity> allSurah = <SurahEntity>[].obs;
+ late Rxn<SurahDetailsEntity>   surah = Rxn<SurahDetailsEntity>();
 
-  final RxList<SurahModel> surahs = <SurahModel>[
-    const SurahModel(
-      number: 1,
-      name: 'Al-Fatiha',
-      arabicName: 'الْفَاتِحَة',
-      verses: 7,
-      revelationType: 'Meccan',
-    ),
-    const SurahModel(
-      number: 2,
-      name: 'Al-Baqarah',
-      arabicName: 'الْبَقَرَة',
-      verses: 286,
-      revelationType: 'Medinan',
-    ),
-    const SurahModel(
-      number: 3,
-      name: 'Al-Imran',
-      arabicName: 'آلِ عِمْرَان',
-      verses: 200,
-      revelationType: 'Medinan',
-    ),
-    const SurahModel(
-      number: 4,
-      name: 'An-Nisa',
-      arabicName: 'النِّسَاء',
-      verses: 176,
-      revelationType: 'Medinan',
-    ),
-    const SurahModel(
-      number: 5,
-      name: "Al-Ma'idah",
-      arabicName: 'الْمَائِدَة',
-      verses: 120,
-      revelationType: 'Medinan',
-    ),
-  ].obs;
+  @override
+  void onInit() async{
+    // TODO: implement onInit
+    super.onInit();
+   await  fetchAllSurah();
+   }
+
+  Future fetchAllSurah() async {
+    allSurachFetching.value = true;
+
+    try{
+      allSurah.value =  await getAllUseCases.call();
+      allSurachFetching.value = false;
+    }
+    catch (e){
+      Get.snackbar("error message", "the following error are occurred\n${e.toString()}");
+    }
+    finally{
+      allSurachFetching.value = false;
+
+    }
+  }
+
+  Future<void> fetchSurah(int number)async {
+    Get.to(() => SurahDetailView(number: number),binding: HollyQuranBinding());
+    try{
+      surahFetching.value = true;
+      surah.value = await getAllUseCases.surahRepository.getSurahDetails(number);
+    }
+    catch (e){
+      Get.snackbar("error message", "the following error are occurred\n${e.toString()}");
+
+    }
+    finally{
+      surahFetching.value = false;
+    }
+  }
 
   final List<String> tabs = const [
     'Surah',
@@ -53,16 +65,16 @@ class HollyQuranController  extends GetxController{
     'Bookmarks',
   ];
 
-  List<SurahModel> get filteredSurahs {
-    final query = searchQuery.value.trim().toLowerCase();
-
-    if (query.isEmpty) return surahs.toList();
-
-    return surahs.where((surah) {
-      return surah.name.toLowerCase().contains(query) ||
-          surah.number.toString() == query;
-    }).toList();
-  }
+  // List<SurahModedel> get filteredSurahs {
+  //   final query = searchQuery.value.trim().toLowerCase();
+  //
+  //   if (query.isEmpty) return surahs.toList();
+  //
+  //   return surahs.where((surah) {
+  //     return surah.name.toLowerCase().contains(query) ||
+  //         surah.number.toString() == query;
+  //   }).toList();
+  // }
 
   void selectTab(int index) {
     selectedTab.value = index;
@@ -95,19 +107,5 @@ class HollyQuranController  extends GetxController{
 }
 
 
-class SurahModel {
-  final int number;
-  final String name;
-  final String arabicName;
-  final int verses;
-  final String revelationType;
 
-  const SurahModel({
-    required this.number,
-    required this.name,
-    required this.arabicName,
-    required this.verses,
-    required this.revelationType,
-  });
-}
 

@@ -1,13 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:qalbi/enums/enum.dart';
 import 'package:qalbi/presentations/export.dart';
+ import 'package:qalbi/presentations/holy_quran/repository/surah_entity.dart';
 import 'package:qalbi/widgets/custom_appbar.dart';
 
-import '../../utils/app_colors.dart';
-import '../../utils/app_text.dart';
 import '../../utils/app_text_field.dart';
-import 'holly_quran_controller.dart';
+ import 'holly_quran_controller.dart';
 
 class HolyQuranVew extends GetView<HollyQuranController> {
   const HolyQuranVew({super.key});
@@ -153,9 +150,9 @@ class HolyQuranVew extends GetView<HollyQuranController> {
   }
 
   Widget buildSurahList() {
-    final surahs = controller.filteredSurahs;
+    // final surahs = controller.filteredSurahs;
 
-    if (surahs.isEmpty) {
+    if (controller.allSurah.isEmpty) {
       return Center(
         child: AppText(
           'No Surahs found'.tr,
@@ -165,24 +162,30 @@ class HolyQuranVew extends GetView<HollyQuranController> {
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.only(bottom: 20, top: 2),
-      itemCount: surahs.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final surah = surahs[index];
+    return Obx(
+        () {
+          if(controller.allSurachFetching.value){
+            return Center(child: CircularProgressIndicator(),);
+          }
+        return   ListView.separated(
+            padding: const EdgeInsets.only(bottom: 20, top: 2),
+            itemCount: controller.allSurah.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final surah = controller.allSurah[index];
 
-        return SurahTile(
-          surah: surah,
-          onTap: () => controller.openSurah(surah),
-        );
-      },
+              return SurahTile(surah: surah, onTap: () async{
+                await controller.fetchSurah(surah.number);
+              });
+            },
+          );
+        }
     );
   }
 }
 
 class SurahTile extends StatelessWidget {
-  final SurahModel surah;
+  final SurahEntity surah;
   final VoidCallback onTap;
 
   const SurahTile({super.key, required this.surah, required this.onTap});
@@ -223,9 +226,7 @@ class SurahTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.inputFill,
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.border.withOpacity(0.3),
-                  ),
+                  border: Border.all(color: AppColors.border.withOpacity(0.3)),
                 ),
                 child: AppText(
                   '${surah.number}',
@@ -247,7 +248,7 @@ class SurahTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     AppText(
-                      '${surah.verses} ${'verses'.tr}  |  '
+                      '${surah.number} ${'verses'.tr}  |  '
                       '${surah.revelationType.tr}',
                       fontWeight: FontWeight.bold,
                       fontSize: 14.sp,
@@ -258,7 +259,7 @@ class SurahTile extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                surah.arabicName,
+                surah.englishNameTranslation,
                 textDirection: TextDirection.rtl,
                 style: TextStyle(
                   fontFamily: 'Amiri',
@@ -271,6 +272,96 @@ class SurahTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class SurahDetailView extends GetView<HollyQuranController> {
+  final int number;
+
+  const SurahDetailView({
+    super.key,
+    required this.number,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title:   Text(controller.surah.value!.name.toString()),
+        centerTitle: true,
+      ),
+      body: Obx(() {
+        if (controller.surahFetching.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        final surah = controller.surah.value;
+
+        if (surah == null) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('No Surah found'),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => controller.fetchSurah(number),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              surah.name,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            ...surah.ayahs.map((ayah) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Theme.of(context).cardColor,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      ayah.numberInSurah.toString(),
+                      textAlign: TextAlign.left,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      ayah.text,
+                      textAlign: TextAlign.right,
+                      textDirection: TextDirection.rtl,
+                      style: const TextStyle(
+                        fontSize: 27,
+                        height: 2.0,
+                        fontFamily: 'Amiri',
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        );
+      }),
     );
   }
 }

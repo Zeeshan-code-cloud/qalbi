@@ -1,4 +1,5 @@
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qalbi/enums/enum.dart';
 import 'package:qalbi/presentations/export.dart';
 import 'package:qalbi/presentations/home_view/home_controller.dart';
 
@@ -274,7 +275,7 @@ class HomeView extends GetView<HomeController> {
     return GestureDetector(
       onTap: () {
         if (feature.route.isNotEmpty) {
-          Get.toNamed(feature.route);
+          Get.toNamed(feature.route, arguments: NavType.fromHomeTile);
 
         }
       },
