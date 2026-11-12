@@ -8,9 +8,9 @@ class TasbeehView extends GetView<TasbeehController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightSurface,
+      backgroundColor: AppColors.background,
       appBar: AppCustomBar(
-        title: "Tasbeeh",
+        title: "Tasbeeh".tr,
          backgroundColor: Colors.transparent,
       ),
       body: SafeArea(
@@ -39,21 +39,62 @@ class TasbeehView extends GetView<TasbeehController> {
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
                           ),
-                          const SizedBox(height: 2),
-                          AppText(
-                            'SubhanAllah',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF49433A),
-                          ),
-                          SizedBox(height: 5.h),
+
+                          SizedBox(height: 10.h),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: 3.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: Obx(
+                  () => Material(
+                    color:  AppColors.background,
+                    borderRadius: BorderRadius.circular(18),
+                    child: InkWell(
+                      onTap: _showTasbeehPicker,
+                      borderRadius: BorderRadius.circular(18),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: const Color(0xFFEAE1D1)),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: AppText(
+                                controller.selectedTasbeeh.value,
+                                textDirection: TextDirection.rtl,
+                                textAlign: TextAlign.right,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                   fontSize: 19,
+                                   color: AppColors.text,
+                                  fontWeight: FontWeight.w600,
+                               ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: AppColors.goldDark,
+                              size: 28,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 2.h),
 
               // Decrease and increase controls
               Row(
@@ -81,7 +122,7 @@ class TasbeehView extends GetView<TasbeehController> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFFCF6),
+                    color: AppColors.background,
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(color: const Color(0xFFEAE1D1)),
                     boxShadow: [
@@ -104,15 +145,13 @@ class TasbeehView extends GetView<TasbeehController> {
                               size: 21,
                             ),
                             const SizedBox(width: 9),
-                            const Expanded(
-                              child: Text(
+                              Expanded(
+                              child: AppText(
                                 'Daily Goal',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFF69645B),
+                                   fontSize: 13,
+                                  color: AppColors.text,
                                   fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                               ),
                             ),
                             IconButton(
                               visualDensity: VisualDensity.compact,
@@ -120,7 +159,7 @@ class TasbeehView extends GetView<TasbeehController> {
                                 Get.dialog(
                                   AlertDialog(
                                     backgroundColor: AppColors.goldLight,
-                                    title: const Text('Daily Goal'),
+                                    title:   AppText('Daily Goal',color: AppColors.text,),
                                     content: TextField(
                                       autofocus: true,
                                       keyboardType: TextInputType.number,
@@ -147,13 +186,18 @@ class TasbeehView extends GetView<TasbeehController> {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          '${controller.count.value} / ${controller.dailyGoal.value}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF282720),
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AppText(
+                              '${controller.count.value} / ${controller.dailyGoal.value}',
+                                 fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.text
+                              ),
+
+                            IconButton(onPressed: controller.reset, icon: Icon(Icons.clear))
+                          ],
                         ),
                         const SizedBox(height: 14),
                         ClipRRect(
@@ -179,21 +223,128 @@ class TasbeehView extends GetView<TasbeehController> {
     );
   }
 
+  void _showTasbeehPicker() {
+    Get.bottomSheet<void>(
+      SafeArea(
+        top: false,
+        child: Container(
+          height: 78.h,
+          padding: EdgeInsets.fromLTRB(5.w, 2.h, 5.w, 1.h),
+          decoration:   BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: 42,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              SizedBox(height: 2.h),
+              Row(
+                children: [
+                    Expanded(
+                    child: AppText(
+                      'Choose a Tasbeeh',
+                         fontSize: 19,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.text,
+                      ),
+                   ),
+                  IconButton(
+                    onPressed: () => Get.back<void>(),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+              SizedBox(height: 1.h),
+              TextField(
+                controller: controller.tasbeehSearchController,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
+                onChanged: (value) => controller.tasbeehSearchQuery.value = value,
+                decoration: InputDecoration(
+                  hintText: 'ابحث عن التسبيح',
+                  prefixIcon: const Icon(Icons.search_rounded),
+                  filled: true,
+                  fillColor: AppColors.background,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                ),
+              ),
+              SizedBox(height: 1.h),
+              Expanded(
+                child: Obx(() {
+                  final phrases = controller.filteredTasbeehOptions;
+                  if (phrases.isEmpty) {
+                    return   Center(child: AppText('لا توجد نتائج'));
+                  }
+                  return ListView.separated(
+                    itemCount: phrases.length,
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final phrase = phrases[index];
+                      final selected =
+                          controller.selectedTasbeeh.value == phrase;
+                      return ListTile(
+                        onTap: () {
+                          controller.selectTasbeeh(phrase);
+                          Get.back<void>();
+                        },
+                        title: AppText(
+                          phrase,
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.right,
+                             fontSize: 17,
+                             color: AppColors.text,
+                          ),
+                         trailing: selected
+                            ? const Icon(
+                                Icons.check_circle_rounded,
+                                color: AppColors.goldDark,
+                              )
+                            : const Icon(Icons.circle_outlined),
+                      );
+                    },
+                  );
+                }),
+              ),
+            ],
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
   Widget _tasbeehButton({
     required IconData icon,
     required VoidCallback onTap,
     bool isPrimary = false,
   }) {
     return Material(
-      color: isPrimary ? const Color(0xFFE9DFC9) : const Color(0xFFF0E9DC),
+      color: AppColors.background,
       shape: const CircleBorder(),
+
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
-        child: SizedBox(
+        child: Container(
           width: 54,
           height: 54,
-          child: Icon(icon, size: 28, color: const Color(0xFF292820)),
+          decoration: BoxDecoration(
+            border: BoxBorder.all(color: AppColors.border),
+            shape: BoxShape.circle
+          ),
+          child: Icon(icon, size: 28, color: AppColors.text),
         ),
       ),
     );

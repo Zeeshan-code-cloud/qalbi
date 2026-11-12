@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:qalbi/presentations/holy_quran/holy_quran_vew.dart';
-import 'package:qalbi/presentations/qibla/qibla_view.dart';
 
 import '../calender_view/calender_view.dart';
 import '../duas_view/duas_view.dart';
@@ -16,6 +15,6 @@ class BottomNavController extends GetxController{
     const HolyQuranVew(),
       DuasView(),
       CalenderView(),
-    const QiblaView(),
+    const SettingView(),
   ];
 }

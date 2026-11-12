@@ -8,6 +8,7 @@ class AppFormField extends StatelessWidget {
   final IconData? icon;
   final bool isObsecured;
   final VoidCallback? onTap;
+  final ValueChanged? onChange;
   final TextEditingController textEditingController;
   final String? Function(String?)? validator;
   final TextInputType textInputType;
@@ -54,6 +55,7 @@ class AppFormField extends StatelessWidget {
     this.textColor = Colors.black12,
     this.hintTextColor = Colors.black,
     this.keyboardType = TextInputType.text,
+    this.onChange
   });
 
   String? _validateWordCount(String? value) {
@@ -69,6 +71,7 @@ class AppFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onChanged: onChange,
       onTapOutside: (event){
         FocusManager.instance.primaryFocus!.unfocus();
       },

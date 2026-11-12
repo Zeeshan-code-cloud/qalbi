@@ -1,0 +1,22 @@
+
+<svg xmlns="http://www.w3.org/2000/svg"
+    width="600" height="400"
+    viewBox="0 0 600 400">
+
+    <!-- Green background -->
+    <rect width="600" height="400" fill="#01411C"/>
+
+    <!-- White vertical stripe -->
+    <rect width="150" height="400" fill="#FFFFFF"/>
+
+    <!-- Crescent -->
+    <circle cx="355" cy="190" r="112" fill="#FFFFFF"/>
+    <circle cx="390" cy="158" r="100" fill="#01411C"/>
+
+    <!-- Five-pointed star -->
+    <polygon
+        points="435,78 450,126 500,126 460,157
+            475,205 435,176 395,205 410,157
+            370,126 420,126"
+        fill="#FFFFFF"/>
+</svg>

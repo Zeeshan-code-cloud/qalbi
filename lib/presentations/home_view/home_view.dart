@@ -62,7 +62,7 @@ class HomeView extends GetView<HomeController> {
                     children: [
                       Obx(
                         () => AppText(
-                          controller.welcomeMessage.value.tr,
+                          controller.welcomeMessage.tr,
                           color: AppColors.goldLight,
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
@@ -70,11 +70,11 @@ class HomeView extends GetView<HomeController> {
                       ),
                       SizedBox(width: 1.w),
                       Icon(
-                        controller.welcomeMessage.value == "Good Morning"
+                        controller.welcomeMessage == "Good Morning"
                             ? Icons.light_mode_outlined
-                            : controller.welcomeMessage.value == "Good Afternoon"
+                            : controller.welcomeMessage == "Good Afternoon"
                             ? Icons.light_mode
-                            : controller.welcomeMessage.value == "Good Evening"
+                            : controller.welcomeMessage == "Good Evening"
                             ? Icons.dark_mode
                             : Icons.nightlight_round,
                         color: AppColors.goldLight,
@@ -102,181 +102,209 @@ class HomeView extends GetView<HomeController> {
                 ),
               ),
             ),
-          Positioned(
-            top: 15.h,
-            child: Container(
-              width: 98.w,
-              height: 22.h,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(AppAssets.nextPrayerImage),
-                  fit: BoxFit.contain,
+            Positioned(
+              top: 15.h,
+              child: Container(
+                width: 98.w,
+                height: 22.h,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(AppAssets.nextPrayerImage),
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            top: 20.h,
-            left: 4.w,
-            child: Row(
-              children: [
-                Column(
-                  children: [
-                    Icon(
-                      Icons.mosque_rounded,
-                      color: AppColors.goldLight,
-                      size: 8.w,
-                    ),
-                    Container(
-                      width: 8.w,
-                      height: 0.3.h,
-                      color: AppColors.goldLight,
-                    ),
-                  ],
-                ),
-                SizedBox(width: 3.w),
-                Padding(
-                  padding:  EdgeInsets.only(left: 2.w),
-                  child: Column(
+            Positioned(
+              top: 20.h,
+              left: 4.w,
+              child: Row(
+                children: [
+                  Column(
                     children: [
-                      AppText(
-                        "next_prayers".tr,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.darkText,
+                      Icon(
+                        Icons.mosque_rounded,
+                        color: AppColors.goldLight,
+                        size: 8.w,
                       ),
-                      SizedBox(height: 0.1.h),
-                      AppText(
-                        "Dhuhr".tr,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.darkText,
+                      Container(
+                        width: 8.w,
+                        height: 0.3.h,
+                        color: AppColors.goldLight,
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 26.h,
-            left: 5.w,
-            child: Row(
-              children: [
-                Column(
-                  children: [
-                    AppText(
-                      "12:23",
-                      fontSize: 23.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.goldLight,
-                    ),
-                    SizedBox(height: 0.1.h),
-                    Row(
+                  SizedBox(width: 3.w),
+                  Padding(
+                    padding: EdgeInsets.only(left: 2.w),
+                    child: Column(
                       children: [
-                        Icon(
-                          Icons.timelapse_rounded,
-                          color: AppColors.goldLight,
-                          size: 4.w,
-                        ),
                         AppText(
-                          "02:02:02",
-                          fontSize: 15.sp,
+                          "next_prayers".tr,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.darkText,
+                        ),
+                        SizedBox(height: 0.1.h),
+                        AppText(
+                          controller.nextPrayerName.tr,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: AppColors.darkText,
                         ),
                       ],
                     ),
-                  ],
-                ),
-                SizedBox(width: 10.w),
-                Container(width: 0.6.w, height: 8.h, color: AppColors.goldLight.withOpacity(0.5)),
-                SizedBox(width: 3.w),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () {},
-                      child: Row(
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 26.h,
+              left: 5.w,
+              child: Row(
+                children: [
+                  Column(
+                    children: [
+                      AppText(
+                        controller.nextPrayerTime,
+                        fontSize: 23.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.goldLight,
+                      ),
+                      SizedBox(height: 0.1.h),
+                      Row(
                         children: [
+                          Icon(
+                            Icons.timelapse_rounded,
+                            color: AppColors.goldLight,
+                            size: 4.w,
+                          ),
                           AppText(
-                            "today_prayer_times".tr,
-                            fontSize: 14.sp,
+                            controller.countdownText,
+                            fontSize: 15.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.darkText,
                           ),
-                          SizedBox(width: 1.w),
-                          Icon(
-                            Icons.arrow_forward_rounded,
-                            color: AppColors.goldLight,
-                            size: 15,
-                          ),
                         ],
                       ),
-                    ),
-                    SizedBox(height: 0.3.h),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: BoxBorder.fromLTRB(
-                          top: BorderSide(color: AppColors.goldLight.withOpacity(0.6)),
-                          right: BorderSide.none,
-                          bottom: BorderSide.none,
-                          left: BorderSide.none,
+                    ],
+                  ),
+                  SizedBox(width: 2.w),
+                  Container(
+                    width: 0.6.w,
+                    height: 8.h,
+                    color: AppColors.goldLight.withOpacity(0.5),
+                  ),
+                  SizedBox(width: 1.w),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {},
+                        child: Row(
+                          children: [
+                            AppText(
+                              "today_prayer_times".tr,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.darkText,
+                            ),
+                            SizedBox(width: 1.w),
+                            Icon(
+                              Icons.arrow_forward_rounded,
+                              color: AppColors.goldLight,
+                              size: 15,
+                            ),
+                          ],
                         ),
                       ),
-                      child: Row(
-                        children: List.generate(controller.prayers.length, (
-                          index,
-                        ) {
-                          return Container(
-                            margin: EdgeInsets.only(top: 1.h),
-                            padding: EdgeInsets.all(1.w),
-                            decoration: BoxDecoration(
-                              border: BoxBorder.fromLTRB(
-                                left: BorderSide(color: AppColors.goldLight.withOpacity(0.6)),
-                                right: BorderSide.none,
-                                bottom: BorderSide.none,
-                                top: BorderSide.none,
+                      SizedBox(height: 0.3.h),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: BoxBorder.fromLTRB(
+                            top: BorderSide(
+                              color: AppColors.goldLight.withOpacity(0.6),
+                            ),
+                            right: BorderSide.none,
+                            bottom: BorderSide.none,
+                            left: BorderSide.none,
+                          ),
+                        ),
+                        child: Row(
+                          children: List.generate(controller.prayers.length, (
+                            index,
+                          ) {
+                            return Container(
+                              margin: EdgeInsets.only(top: 1.h),
+                              padding: EdgeInsets.all(1.w),
+                              decoration: BoxDecoration(
+                                border: BoxBorder.fromLTRB(
+                                  left: BorderSide(
+                                    color: AppColors.goldLight.withOpacity(0.6),
+                                  ),
+                                  right: BorderSide.none,
+                                  bottom: BorderSide.none,
+                                  top: BorderSide.none,
+                                ),
                               ),
-                            ),
-                            child: Column(
-                              children: [
-                                AppText(
-                                  controller.prayers[index].prayerName.tr,
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.darkText,
-                                ),
-                                SizedBox(height: 0.1.h),
-                                AppText(
-                                  controller.prayers[index].time,
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.darkText,
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
+                              child: Column(
+                                children: [
+                                  AppText(
+                                    controller.prayers[index].prayerName.tr,
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.darkText,
+                                  ),
+                                  SizedBox(height: 0.1.h),
+                                  AppText(
+                                    controller.prayers[index].time,
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.darkText,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 
   Widget _buildFeatureTile(HomeFeatureModel feature) {
     return GestureDetector(
       onTap: () {
+        if (feature.title == "Dark Mode") {
+          controller.themeC.toggledTheme();
+          return;
+        }
+
+        if (feature.title == "Multiple Language") {
+          Get.dialog(
+            AlertDialog(
+              title: Text("Choose Your Language".tr),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _languageOption('🇺🇸', 'English'),
+                  _languageOption('🇵🇰', 'Urdu'),
+                  _languageOption('🇸🇦', 'Arabic'),
+                ],
+              ),
+            ),
+          );
+          return;
+        }
         if (feature.route.isNotEmpty) {
           Get.toNamed(feature.route, arguments: NavType.fromHomeTile);
-
         }
       },
       child: Container(
@@ -284,10 +312,7 @@ class HomeView extends GetView<HomeController> {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(17),
-          border: Border.all(
-            color: AppColors.border,
-            width: 0.9,
-          ),
+          border: Border.all(color: AppColors.border, width: 0.9),
           boxShadow: [
             BoxShadow(
               color: AppColors.shadow.withOpacity(0.1),
@@ -307,7 +332,7 @@ class HomeView extends GetView<HomeController> {
                   SizedBox(
                     height: 7.h,
                     child: Center(
-                      child: Image.asset(feature.iconPath, fit: BoxFit.contain),
+                      child:Image.asset(feature.iconPath, fit: BoxFit.contain),
                     ),
                   ),
                   SizedBox(height: 0.3.h),
@@ -338,6 +363,18 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
+  Widget _languageOption(String flag, String language) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Text(flag, style: const TextStyle(fontSize: 24)),
+      title: Text(language),
+      onTap: () async {
+        await controller.selectLanguage(language);
+        Get.back();
+      },
+    );
+  }
+
   Widget quoteSlider() {
     return Container(
       margin: EdgeInsets.all(1.w),
@@ -364,19 +401,21 @@ class HomeView extends GetView<HomeController> {
               AppText(
                 quote.quote.tr,
                 color: AppColors.primaryColor,
-                fontSize: 16.sp,
+                fontSize: 15.sp,
                 fontWeight: FontWeight.w600,
                 textAlign: TextAlign.center,
-                maxLines: 1,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: 0.1.h),
               AppText(
                 quote.reference,
                 color: AppColors.primaryColor,
-                fontSize: 13.sp,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w700,
                 textAlign: TextAlign.center,
                 maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           );

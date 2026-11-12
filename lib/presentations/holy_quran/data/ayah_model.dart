@@ -9,6 +9,8 @@ class AyahModel extends AyahEntity {
     required super.juz,
     required super.page,
     required super.sajda,
+    required super.translation,
+    required super.urduTranslation,
   });
 
   factory AyahModel.fromJson(Map<String, dynamic> json) {
@@ -19,6 +21,8 @@ class AyahModel extends AyahEntity {
       juz: json['juz'] ?? 0,
       page: json['page'] ?? 0,
       sajda: json['sajda'] == true,
+      translation: json['translation']?.toString() ?? '',
+      urduTranslation: json['urduTranslation']?.toString() ?? '',
     );
   }
 }

@@ -36,6 +36,7 @@ class AppText extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? overflow;
   final double? letterSpacing;
+  final TextDirection textDirection;
 
   const AppText(
       this.text, {
@@ -47,7 +48,8 @@ class AppText extends StatelessWidget {
         this.textAlign,
         this.maxLines,
         this.overflow,
-        this.letterSpacing
+        this.letterSpacing,
+        this.textDirection = TextDirection.ltr,
       });
 
   TextStyle _getBaseStyle() {
@@ -104,6 +106,7 @@ class AppText extends StatelessWidget {
       maxLines: maxLines,
       overflow: overflow,
       textAlign: textAlign,
+      textDirection: textDirection,
       style: baseStyle.copyWith(
         color: color ?? baseStyle.color,
         fontWeight: fontWeight ?? baseStyle.fontWeight,

@@ -1,0 +1,37 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+    <defs>
+        <linearGradient id="gold" x1="20" y1="15" x2="80" y2="85" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#E9C779"/>
+            <stop offset="1" stop-color="#B98738"/>
+        </linearGradient>
+        <linearGradient id="green" x1="25" y1="20" x2="75" y2="85" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#287356"/>
+            <stop offset="1" stop-color="#124633"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Outer ornamental frame -->
+    <path d="M50 9C55 17 64 17 70 14C70 24 78 29 88 30C82 39 85 47 92 53C82 58 80 67 83 76C73 75 65 80 62 90C55 84 45 84 38 90C35 80 27 75 17 76C20 67 18 58 8 53C15 47 18 39 12 30C22 29 30 24 30 14C36 17 45 17 50 9Z"
+        stroke="url(#gold)" stroke-width="2"
+        stroke-linejoin="round"/>
+
+    <!-- Hands raised in dua -->
+    <path d="M39 67L32 57C30 54 31 51 34 50C36 49 38 51 40 54L43 58L42 39C42 35 44 33 47 33C50 33 51 36 51 39V53L53 36C53 32 55 30 58 31C61 32 61 35 61 38L60 54L63 41C64 37 66 36 69 37C72 38 72 41 71 44L67 62C66 67 62 71 57 73L50 76L39 67Z"
+        fill="url(#green)" stroke="url(#gold)" stroke-width="2"
+        stroke-linejoin="round"/>
+
+    <!-- Palm details -->
+    <path d="M47 57L47 66M56 55L55 65M65 54L62 64"
+        stroke="#E9C779" stroke-width="1.4"
+        stroke-linecap="round"/>
+
+    <!-- Small crescent ornament -->
+    <path d="M50 16C45 19 45 26 51 29C47 29 42 26 42 22C42 17 46 14 50 16Z"
+        fill="url(#gold)"/>
+
+    <!-- Bottom decorative dots -->
+    <circle cx="39" cy="83" r="1.8" fill="url(#gold)"/>
+    <circle cx="50" cy="86" r="1.8" fill="url(#gold)"/>
+    <circle cx="61" cy="83" r="1.8" fill="url(#gold)"/>
+</svg>

@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
 import 'package:qalbi/presentations/export.dart';
 
 import '../../enums/enum.dart';
 import '../../widgets/custom_appbar.dart';
 import 'calender_controller.dart';
+import 'domain/entity/islamic_event_entity.dart';
 
 class CalenderView extends GetView<CalenderController> {
   CalenderView({super.key});
@@ -30,8 +30,7 @@ class CalenderView extends GetView<CalenderController> {
                   icon: Icon(Icons.arrow_back, color: AppColors.primaryColor),
                 )
               : const SizedBox.shrink(),
-          actionIcon: Icons.info_outline_rounded,
-          backgroundColor: Colors.transparent,
+           backgroundColor: Colors.transparent,
         ),
         body: SafeArea(
           child: CustomScrollView(
@@ -44,25 +43,18 @@ class CalenderView extends GetView<CalenderController> {
                     const SizedBox(height: 16),
                     _buildWeekSelector(),
                     const SizedBox(height: 24),
-                    _buildSectionHeader(
-                      'Upcoming Events'.tr,
-                      onViewAll: () {
-                        Get.toNamed('/islamic-events');
-                      },
-                    ),
+                    _buildSectionHeader('Upcoming Events'.tr),
                     const SizedBox(height: 12),
                     _buildEventList(
-                      controller.events
-                          .where((event) => !event.isImportant)
-                          .toList(),
+                      controller.specialDays.toList(),
+                      isLoading: controller.specialDaysFetching.value,
                     ),
                     const SizedBox(height: 24),
                     _buildSectionHeader('Important Dates'.tr),
                     const SizedBox(height: 12),
                     _buildEventList(
-                      controller.events
-                          .where((event) => event.isImportant)
-                          .toList(),
+                      controller.monthHolidays,
+                      isLoading: controller.islamicMonthFetching.value,
                     ),
                   ]),
                 ),
@@ -77,9 +69,10 @@ class CalenderView extends GetView<CalenderController> {
   Widget _buildHijriBanner() {
     return Obx(() {
       final date = controller.selectedDate.value;
+      final hijriDate = controller.calendarFor(date);
 
       return Container(
-        height: 194,
+        height: 22.h,
         width: double.infinity,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
@@ -115,15 +108,15 @@ class CalenderView extends GetView<CalenderController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AppText(
-                    "Rabi' al-Thani",
-                    color: Color(0xFFF5D99A),
+                  AppText(
+                    hijriDate?.hijriMonthEnglish ?? 'Islamic Calendar',
+                    color: const Color(0xFFF5D99A),
                     fontSize: 23,
                     fontWeight: FontWeight.w700,
                   ),
                   const SizedBox(height: 5),
-                  const AppText(
-                    '1447 AH',
+                  AppText(
+                    hijriDate == null ? 'Hijri date unavailable' : '${hijriDate.hijriYear} AH',
                     color: Colors.white,
                     fontSize: 19,
                     fontWeight: FontWeight.w600,
@@ -270,7 +263,17 @@ class CalenderView extends GetView<CalenderController> {
     );
   }
 
-  Widget _buildEventList(List<IslamicEventModel> events) {
+  Widget _buildEventList(
+    List<IslamicEventEntity> events, {
+    bool isLoading = false,
+  }) {
+    if (isLoading) {
+      return const Padding(
+        padding: EdgeInsets.all(20),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     if (events.isEmpty) {
       return Container(
         width: double.infinity,
@@ -319,21 +322,13 @@ class CalenderView extends GetView<CalenderController> {
     );
   }
 
-  Widget _buildEventTile(IslamicEventModel event) {
-    final icon = _eventIcon(event.iconKey);
-    final iconColor = _eventColor(event.iconKey);
+  Widget _buildEventTile(IslamicEventEntity event) {
+    final icon = _eventIcon(event.name.toLowerCase());
+    final iconColor = _eventColor(event.name.toLowerCase());
 
-    return InkWell(
-      onTap: () {
-        Get.toNamed('/islamic-event-details', arguments: event);
-      },
-      borderRadius: BorderRadius.circular(18),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 13,
-        ),
-        child: Row(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+      child: Row(
           children: [
             Container(
               width: 46,
@@ -354,13 +349,13 @@ class CalenderView extends GetView<CalenderController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText(
-                    event.title.tr,
+                    event.name.tr,
                     type: AppTextType.bodyBold,
                     color: AppColors.text,
                   ),
                   const SizedBox(height: 4),
                   AppText(
-                    event.subtitle.tr,
+                    '${event.day} ${_hijriMonth(event.month)}',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     fontSize: 12,
@@ -374,7 +369,7 @@ class CalenderView extends GetView<CalenderController> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  event.day,
+                  '${event.day}',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -382,7 +377,7 @@ class CalenderView extends GetView<CalenderController> {
                   ),
                 ),
                 Text(
-                  event.month.tr,
+                  _hijriMonth(event.month),
                   style: TextStyle(
                     fontSize: 12,
                     color: muted,
@@ -391,9 +386,17 @@ class CalenderView extends GetView<CalenderController> {
               ],
             ),
           ],
-        ),
       ),
     );
+  }
+
+  String _hijriMonth(int month) {
+    const names = [
+      'Muharram', 'Safar', "Rabi' al-Awwal", "Rabi' al-Thani",
+      'Jumada al-Awwal', 'Jumada al-Thani', 'Rajab', "Sha'ban",
+      'Ramadan', 'Shawwal', "Dhu al-Qi'dah", 'Dhu al-Hijjah',
+    ];
+    return month >= 1 && month <= names.length ? names[month - 1] : '';
   }
 
   IconData _eventIcon(String key) {

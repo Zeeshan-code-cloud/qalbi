@@ -1,0 +1,103 @@
+
+<svg xmlns="http://www.w3.org/2000/svg"
+    width="600" height="316"
+    viewBox="0 0 600 316">
+
+    <!-- 13 stripes -->
+    <rect width="600" height="316" fill="#FFFFFF"/>
+
+    <g fill="#B22234">
+        <rect y="0" width="600" height="24.31"/>
+        <rect y="48.62" width="600" height="24.31"/>
+        <rect y="97.23" width="600" height="24.31"/>
+        <rect y="145.85" width="600" height="24.31"/>
+        <rect y="194.46" width="600" height="24.31"/>
+        <rect y="243.08" width="600" height="24.31"/>
+        <rect y="291.69" width="600" height="24.31"/>
+    </g>
+
+    <!-- Blue canton -->
+    <rect width="240" height="170.46" fill="#3C3B6E"/>
+
+    <!-- 50 stars -->
+    <defs>
+        <g id="star">
+            <path d="M0,-7 L1.65,-2.27 L6.66,-2.16
+               L2.7,0.87 L4.11,5.68
+               L0,2.8 L-4.11,5.68
+               L-2.7,0.87 L-6.66,-2.16
+               L-1.65,-2.27 Z"
+                fill="#FFFFFF"/>
+        </g>
+    </defs>
+
+    <g>
+        <!-- 6-star rows -->
+        <use href="#star" x="20" y="12"/>
+        <use href="#star" x="60" y="12"/>
+        <use href="#star" x="100" y="12"/>
+        <use href="#star" x="140" y="12"/>
+        <use href="#star" x="180" y="12"/>
+        <use href="#star" x="220" y="12"/>
+
+        <use href="#star" x="20" y="40"/>
+        <use href="#star" x="60" y="40"/>
+        <use href="#star" x="100" y="40"/>
+        <use href="#star" x="140" y="40"/>
+        <use href="#star" x="180" y="40"/>
+        <use href="#star" x="220" y="40"/>
+
+        <use href="#star" x="20" y="68"/>
+        <use href="#star" x="60" y="68"/>
+        <use href="#star" x="100" y="68"/>
+        <use href="#star" x="140" y="68"/>
+        <use href="#star" x="180" y="68"/>
+        <use href="#star" x="220" y="68"/>
+
+        <use href="#star" x="20" y="96"/>
+        <use href="#star" x="60" y="96"/>
+        <use href="#star" x="100" y="96"/>
+        <use href="#star" x="140" y="96"/>
+        <use href="#star" x="180" y="96"/>
+        <use href="#star" x="220" y="96"/>
+
+        <use href="#star" x="20" y="124"/>
+        <use href="#star" x="60" y="124"/>
+        <use href="#star" x="100" y="124"/>
+        <use href="#star" x="140" y="124"/>
+        <use href="#star" x="180" y="124"/>
+        <use href="#star" x="220" y="124"/>
+
+        <use href="#star" x="20" y="152"/>
+        <use href="#star" x="60" y="152"/>
+        <use href="#star" x="100" y="152"/>
+        <use href="#star" x="140" y="152"/>
+        <use href="#star" x="180" y="152"/>
+        <use href="#star" x="220" y="152"/>
+
+        <!-- 5-star rows -->
+        <use href="#star" x="40" y="26"/>
+        <use href="#star" x="80" y="26"/>
+        <use href="#star" x="120" y="26"/>
+        <use href="#star" x="160" y="26"/>
+        <use href="#star" x="200" y="26"/>
+
+        <use href="#star" x="40" y="54"/>
+        <use href="#star" x="80" y="54"/>
+        <use href="#star" x="120" y="54"/>
+        <use href="#star" x="160" y="54"/>
+        <use href="#star" x="200" y="54"/>
+
+        <use href="#star" x="40" y="82"/>
+        <use href="#star" x="80" y="82"/>
+        <use href="#star" x="120" y="82"/>
+        <use href="#star" x="160" y="82"/>
+        <use href="#star" x="200" y="82"/>
+
+        <use href="#star" x="40" y="110"/>
+        <use href="#star" x="80" y="110"/>
+        <use href="#star" x="120" y="110"/>
+        <use href="#star" x="160" y="110"/>
+        <use href="#star" x="200" y="110"/>
+    </g>
+</svg>

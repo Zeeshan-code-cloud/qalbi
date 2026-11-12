@@ -1,116 +1,115 @@
 import 'package:get/get.dart';
+import 'package:qalbi/presentations/calender_view/domain/entity/hijri_calendar_entity.dart';
+import 'package:qalbi/presentations/calender_view/domain/entity/islamic_event_entity.dart';
+import 'package:qalbi/presentations/calender_view/use_cases/get_islamic_events_usecase.dart';
+import 'package:qalbi/presentations/calender_view/use_cases/get_month_calendar_usecase.dart';
 
 class CalenderController extends GetxController {
-  final selectedDate = DateTime(2025, 10, 16).obs;
-  final displayedMonth = DateTime(2025, 10, 1).obs;
+  final GetMonthCalendarUseCase getMonthCalendarUseCase;
+  final GetIslamicEventsUseCase getIslamicEventsUseCase;
 
-  final events = <IslamicEventModel>[
-    const IslamicEventModel(
-      title: "Rabi' al-Thani 1",
-      subtitle: "Start of Rabi' al-Thani 1447 AH",
-      day: '26',
-      month: 'Oct',
-      iconKey: 'month',
-    ),
-    const IslamicEventModel(
-      title: 'Ayyamul Bidh',
-      subtitle: "13th, 14th, 15th of Rabi' al-Thani",
-      day: '8',
-      month: 'Nov',
-      iconKey: 'fasting',
-    ),
-    const IslamicEventModel(
-      title: "Friday (Jumu'ah)",
-      subtitle: 'Weekly Friday Prayer',
-      day: '31',
-      month: 'Oct',
-      iconKey: 'prayer',
-    ),
-    const IslamicEventModel(
-      title: 'Islamic New Year',
-      subtitle: '1 Muharram 1448 AH',
-      day: '26',
-      month: 'Jun',
-      iconKey: 'calendar',
-      isImportant: true,
-    ),
-  ].obs;
+  CalenderController({
+    required this.getIslamicEventsUseCase,
+    required this.getMonthCalendarUseCase,
+  });
 
-  void selectDate(DateTime date) {
-    selectedDate.value = date;
-    displayedMonth.value = DateTime(date.year, date.month, 1);
-  }
+  final RxList<IslamicEventEntity> specialDays = <IslamicEventEntity>[].obs;
+  final RxList<HijriCalendarEntity> islamicMonths = <HijriCalendarEntity>[].obs;
+  final RxBool specialDaysFetching = false.obs;
+  final RxBool islamicMonthFetching = false.obs;
+  final Rx<DateTime> selectedDate = DateTime.now().obs;
 
-  void previousWeek() {
-    selectDate(selectedDate.value.subtract(const Duration(days: 7)));
-  }
-
-  void nextWeek() {
-    selectDate(selectedDate.value.add(const Duration(days: 7)));
-  }
-
-  void previousMonth() {
-    final month = displayedMonth.value;
-    displayedMonth.value = DateTime(month.year, month.month - 1);
-    selectedDate.value = DateTime(
-      displayedMonth.value.year,
-      displayedMonth.value.month,
-      1,
-    );
-  }
-
-  void nextMonth() {
-    final month = displayedMonth.value;
-    displayedMonth.value = DateTime(month.year, month.month + 1);
-    selectedDate.value = DateTime(
-      displayedMonth.value.year,
-      displayedMonth.value.month,
-      1,
-    );
-  }
+  int get currentMonth => selectedDate.value.month;
+  int get currentYear => selectedDate.value.year;
 
   List<DateTime> get weekDates {
     final date = selectedDate.value;
-    final monday = date.subtract(
-      Duration(days: date.weekday - DateTime.monday),
-    );
-
-    return List.generate(
-      7,
-          (index) => monday.add(Duration(days: index)),
-    );
+    final monday = DateTime(date.year, date.month, date.day)
+        .subtract(Duration(days: date.weekday - DateTime.monday));
+    return List.generate(7, (index) => monday.add(Duration(days: index)));
   }
 
-  String get monthName {
-    const months = [
-      'January', 'February', 'March', 'April',
-      'May', 'June', 'July', 'August',
-      'September', 'October', 'November', 'December',
-    ];
-    return months[displayedMonth.value.month - 1];
+  HijriCalendarEntity? calendarFor(DateTime date) {
+    for (final entry in islamicMonths) {
+      if (entry.gregorianYear == date.year &&
+          entry.gregorianMonth == date.month &&
+          entry.gregorianDay == date.day) {
+        return entry;
+      }
+    }
+    return null;
+  }
+
+  List<IslamicEventEntity> get monthHolidays {
+    final holidays = <IslamicEventEntity>[];
+    for (final date in islamicMonths) {
+      for (final holiday in date.holidays) {
+        if (holiday.trim().isNotEmpty) {
+          holidays.add(IslamicEventEntity(
+            day: date.hijriDay,
+            month: date.hijriMonth,
+            name: holiday,
+          ));
+        }
+      }
+    }
+    return holidays;
   }
 
   @override
   void onInit() {
     super.onInit();
-    // Replace the sample date with DateTime.now() if desired.
+    fetchSpecialEvents();
+    fetchIslamicMonth();
   }
 
-}
-class IslamicEventModel {
-  final String title;
-  final String subtitle;
-  final String day;
-  final String month;
-  final String iconKey;
-  final bool isImportant;
+  Future<void> fetchSpecialEvents() async {
+    specialDaysFetching.value = true;
+    try {
+      specialDays.assignAll(await getIslamicEventsUseCase.call());
+    } catch (e) {
+      Get.snackbar('Islamic Event Error', e.toString());
+    } finally {
+      specialDaysFetching.value = false;
+    }
+  }
 
-  const IslamicEventModel({
-    required this.title,
-    required this.subtitle,
-    required this.day,
-    required this.month,
-    required this.iconKey,
-    this.isImportant = false,
-  });
+  Future<void> fetchIslamicMonth() async {
+    islamicMonthFetching.value = true;
+    try {
+      islamicMonths.assignAll(await getMonthCalendarUseCase.call(
+        month: currentMonth,
+        year: currentYear,
+      ));
+    } catch (e) {
+      Get.snackbar('Calendar Error', e.toString());
+    } finally {
+      islamicMonthFetching.value = false;
+    }
+  }
+
+  Future<void> selectDate(DateTime date) async {
+    final loadedMonth = islamicMonths.isEmpty ? null : islamicMonths.first;
+    final needsFetch = loadedMonth == null ||
+        loadedMonth.gregorianMonth != date.month ||
+        loadedMonth.gregorianYear != date.year;
+    selectedDate.value = date;
+    if (needsFetch) await fetchIslamicMonth();
+  }
+
+  Future<void> previousMonth() => _changeMonth(-1);
+
+  Future<void> nextMonth() => _changeMonth(1);
+
+  Future<void> _changeMonth(int offset) async {
+    final selected = selectedDate.value;
+    final targetMonth = DateTime(selected.year, selected.month + offset, 1);
+    final lastDay = DateTime(targetMonth.year, targetMonth.month + 1, 0).day;
+    selectedDate.value = DateTime(
+      targetMonth.year,
+      targetMonth.month,
+      selected.day.clamp(1, lastDay),
+    );
+    await fetchIslamicMonth();
+  }
 }

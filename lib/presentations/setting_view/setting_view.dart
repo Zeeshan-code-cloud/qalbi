@@ -1,4 +1,5 @@
 import 'package:qalbi/presentations/export.dart';
+import 'package:qalbi/core/adhan_notification_service/prayer_calculation_method.dart';
 import 'package:qalbi/presentations/setting_view/setting_controller.dart';
 
 import '../../widgets/custom_appbar.dart';
@@ -50,9 +51,18 @@ class SettingView extends GetView<SettingController> {
                 _settingsTile(
                   icon: Icons.notifications_rounded,
                   title: 'Notifications'.tr,
-                  subtitle: () => 'Adhan, Prayer Reminders'.tr,
+                  subtitle: () => controller.homeController.notificationsEnabled.value
+                      ? 'Adhan notifications are on'.tr
+                      : 'Adhan notifications are off'.tr,
                   showDivider: false,
-                  onTap: () => Get.toNamed('/notification-settings'),
+                  trailing: Obx(
+                    () => Switch.adaptive(
+                      value: controller.homeController.notificationsEnabled.value,
+                      activeTrackColor: green,
+                      onChanged: (_) => controller.toggleAdhanNotifications(),
+                    ),
+                  ),
+                  onTap: controller.toggleAdhanNotifications,
                 ),
               ]),
 
@@ -239,13 +249,9 @@ class SettingView extends GetView<SettingController> {
   void _showPrayerMethodDialog() {
     _showOptionsDialog(
       title: 'Prayer Time Calculation'.tr,
-      options: const [
-        'Muslim World League',
-        'University of Islamic Sciences, Karachi',
-        'Egyptian General Authority',
-        'Umm Al-Qura University',
-        'ISNA',
-      ],
+      options: PrayerCalculationMethod.values
+          .map((method) => method.title)
+          .toList(growable: false),
       selected: controller.prayerCalculationMethod.value,
       onSelected: controller.changePrayerMethod,
     );

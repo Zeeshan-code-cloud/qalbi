@@ -1,10 +1,10 @@
-import 'package:qalbi/enums/enum.dart';
+import 'package:flutter_svg/svg.dart';
+ import 'package:qalbi/enums/enum.dart';
 import 'package:qalbi/presentations/export.dart';
- import 'package:qalbi/presentations/holy_quran/repository/surah_entity.dart';
+import 'package:qalbi/presentations/holy_quran/repository/surah_entity.dart';
 import 'package:qalbi/widgets/custom_appbar.dart';
 
-import '../../utils/app_text_field.dart';
- import 'holly_quran_controller.dart';
+import 'holly_quran_controller.dart';
 
 class HolyQuranVew extends GetView<HollyQuranController> {
   const HolyQuranVew({super.key});
@@ -28,7 +28,7 @@ class HolyQuranVew extends GetView<HollyQuranController> {
           backgroundColor: Colors.transparent,
           actionIcon: Icons.search_rounded,
           onActionTap: () {
-            controller.isSearching.value = true;
+            controller.isSearching.value = !controller.isSearching.value;
           },
         ),
         body: SafeArea(
@@ -42,20 +42,30 @@ class HolyQuranVew extends GetView<HollyQuranController> {
                 // Search
                 if (controller.isSearching.value)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: AppFormField(
-                      title: 'Search Surah...'.tr,
-                      textColor: AppColors.text,
-                      textEditingController: controller.searchController,
-                      isFilled: true,
-                      filledColor: AppColors.card,
-                      showBorder: true,
-                      borderColor: AppColors.border,
-                      focusedBorderColor: AppColors.primaryColor,
-                      icon: Icons.cancel,
-                      onTap: () {
-                        controller.isSearching.value = false;
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: TextField(
+                      controller: controller.searchController,
+                      onChanged: controller.onSearchChanged,
+                      onTapOutside: (vale) {
+                        FocusManager.instance.primaryFocus?.unfocus();
                       },
+                      decoration: InputDecoration(
+                        hintText: 'Search Surah...',
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: Obx(() {
+                          if (controller.searchQuery.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
+
+                          return IconButton(
+                            onPressed: controller.clearSearch,
+                            icon: const Icon(Icons.close),
+                          );
+                        }),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
                     ),
                   )
                 else
@@ -73,19 +83,9 @@ class HolyQuranVew extends GetView<HollyQuranController> {
                       case 0:
                         return buildSurahList();
                       case 1:
-                        return Center(
-                          child: Text(
-                            'Juz list'.tr,
-                            style: TextStyle(color: AppColors.secondaryText),
-                          ),
-                        );
+                        return buildJuzList();
                       default:
-                        return Center(
-                          child: Text(
-                            'Bookmarks'.tr,
-                            style: TextStyle(color: AppColors.secondaryText),
-                          ),
-                        );
+                        return buildBookmarksList();
                     }
                   }),
                 ),
@@ -97,6 +97,37 @@ class HolyQuranVew extends GetView<HollyQuranController> {
     );
   }
 
+  Widget buildJuzList() {
+    return Obx(() {
+      if (controller.juzFetching.value) {
+        return Center(child: CircularProgressIndicator());
+      }
+      return ListView.separated(
+        itemBuilder: (context, index) {
+          final juz = controller.allJuz[index];
+          return ListTile(
+            leading: CircleAvatar(
+              child: AppText(
+                juz.juzNumber.toString(),
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+                fontSize: 20,
+              ),
+            ),
+            title: AppText('Juz ${juz.juzNumber}'),
+            subtitle: AppText(juz.juzArabicName),
+            trailing: const Icon(Icons.arrow_forward_ios),
+            onTap: () {
+              controller.fetchJuzDetails(juz.juzNumber);
+            },
+          );
+        },
+        separatorBuilder: (_, __) => SizedBox(height: 2.h),
+        itemCount: controller.allJuz.length,
+      );
+    });
+  }
+
   Widget buildTabs() {
     return Container(
       padding: const EdgeInsets.all(5),
@@ -105,8 +136,8 @@ class HolyQuranVew extends GetView<HollyQuranController> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.06),
-            blurRadius: 12,
+            color: AppColors.shadow.withOpacity(0.2),
+            blurRadius: 6,
             offset: const Offset(0, 4),
           ),
         ],
@@ -150,37 +181,119 @@ class HolyQuranVew extends GetView<HollyQuranController> {
   }
 
   Widget buildSurahList() {
-    // final surahs = controller.filteredSurahs;
+    return Obx(() {
+      if (controller.allSurahFetching.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-    if (controller.allSurah.isEmpty) {
-      return Center(
-        child: AppText(
-          'No Surahs found'.tr,
-          type: AppTextType.body,
-          color: AppColors.secondaryText,
+      final surahs = controller.filteredSurah;
+
+      if (surahs.isEmpty) {
+        return Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(AppAssets.searchNotFound, height: 8.h,),
+              SizedBox(height: 2.h,),
+              AppText(
+                'No Surahs found'.tr,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.secondaryText,
+              ),
+            ],
+          ),
+        );
+      }
+
+      return ListView.separated(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.only(bottom: 20, top: 2),
+        itemCount: surahs.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final surah = surahs[index];
+          final bookmarked = controller.isBookmarked(surah.number);
+
+          return Dismissible(
+            key: ValueKey('surah_${surah.number}'),
+            direction: DismissDirection.startToEnd, // right se left
+            confirmDismiss: (_) async {
+              controller.adToBookmark(surah.number);
+              Get.snackbar(
+                "Surah added",
+                "Surah are added to bookmark",
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            },
+            background: Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 24),
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Icon(
+                bookmarked ? Icons.bookmark_remove : Icons.bookmark_add,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+            child: SurahTile(
+              surah: surah,
+              onTap: () => controller.fetchSurah(surah.number),
+            ),
+          );
+        },
+      );
+    });
+  }
+
+  Widget buildBookmarksList() {
+    return Obx(() {
+      final items = controller.bookmarkedSurahs;
+
+      if (items.isEmpty) {
+        return Center(
+          child: AppText(
+            'No bookmarks yet\nSwipe a surah from right to left'.tr,
+            textAlign: TextAlign.center,
+            color: AppColors.secondaryText,
+          ),
+        );
+      }
+
+      return ListView.separated(
+        padding: const EdgeInsets.only(bottom: 20, top: 2),
+        itemCount: items.length,
+        separatorBuilder: (_, __) => SizedBox(height: 12),
+        itemBuilder: (context, i) => Dismissible(
+          key: ValueKey('surah_${items[i].number}'),
+          direction: DismissDirection.endToStart, // right se left
+          confirmDismiss: (_) async {
+            controller.removeFromBookmark(items[i].number);
+            Get.snackbar(
+              "Surah Removed",
+              "Surah are removed from  bookmark",
+              snackPosition: SnackPosition.BOTTOM,
+            );
+          },
+          background: Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 24),
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor,
+              borderRadius: BorderRadius.circular(18),
+            ),
+          ),
+          child: SurahTile(
+            surah: items[i],
+            onTap: () => controller.fetchSurah(items[i].number),
+          ),
         ),
       );
-    }
-
-    return Obx(
-        () {
-          if(controller.allSurachFetching.value){
-            return Center(child: CircularProgressIndicator(),);
-          }
-        return   ListView.separated(
-            padding: const EdgeInsets.only(bottom: 20, top: 2),
-            itemCount: controller.allSurah.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final surah = controller.allSurah[index];
-
-              return SurahTile(surah: surah, onTap: () async{
-                await controller.fetchSurah(surah.number);
-              });
-            },
-          );
-        }
-    );
+    });
   }
 }
 
@@ -276,92 +389,3 @@ class SurahTile extends StatelessWidget {
   }
 }
 
-class SurahDetailView extends GetView<HollyQuranController> {
-  final int number;
-
-  const SurahDetailView({
-    super.key,
-    required this.number,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title:   Text(controller.surah.value!.name.toString()),
-        centerTitle: true,
-      ),
-      body: Obx(() {
-        if (controller.surahFetching.value) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        final surah = controller.surah.value;
-
-        if (surah == null) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('No Surah found'),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () => controller.fetchSurah(number),
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              surah.name,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            ...surah.ayahs.map((ayah) {
-              return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Theme.of(context).cardColor,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      ayah.numberInSurah.toString(),
-                      textAlign: TextAlign.left,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      ayah.text,
-                      textAlign: TextAlign.right,
-                      textDirection: TextDirection.rtl,
-                      style: const TextStyle(
-                        fontSize: 27,
-                        height: 2.0,
-                        fontFamily: 'Amiri',
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-          ],
-        );
-      }),
-    );
-  }
-}

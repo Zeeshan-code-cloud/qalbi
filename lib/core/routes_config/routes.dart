@@ -10,5 +10,7 @@ class Routes {
  static final String tasbeehView = "/tasbeehView";
  static final String zakatView = "/zakatView";
  static final String qiblaView = "/qiblaView";
+ static final String offlineAcess = "/offlineAcess";
+
 
 }

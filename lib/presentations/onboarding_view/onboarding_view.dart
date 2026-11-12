@@ -10,10 +10,11 @@ class OnboardingView extends GetView<OnboardingController> {
       () => Scaffold(
         backgroundColor: AppColors.background,
         body: SafeArea(
+          top: false,
           child: Column(
             children: [
               SizedBox(
-                height: 80.h,
+                height: 70.h,
                 child: PageView.builder(
                   controller: controller.pageC,
                   itemCount: controller.onboardingList.length,

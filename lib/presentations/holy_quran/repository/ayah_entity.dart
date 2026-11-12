@@ -5,6 +5,8 @@ class AyahEntity {
   final int juz;
   final int page;
   final bool sajda;
+  final String translation;
+  final String urduTranslation;
 
   const AyahEntity({
     required this.number,
@@ -13,5 +15,7 @@ class AyahEntity {
     required this.juz,
     required this.page,
     required this.sajda,
+    this.translation = '',
+    this.urduTranslation = '',
   });
 }

@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
+import 'dart:ui';
+import 'package:flutter_svg/svg.dart';
 import 'package:qalbi/enums/enum.dart';
 import 'package:qalbi/presentations/export.dart';
-
-import '../../utils/app_colors.dart';
-import '../../utils/app_text.dart';
 import '../../widgets/custom_appbar.dart';
+import 'domain/adhkar_entity.dart';
+import 'domain/duas_entity.dart';
 import 'duas_controller.dart';
 
 class DuasView extends GetView<DuasController> {
@@ -62,30 +62,46 @@ class DuasView extends GetView<DuasController> {
                       ),
                     ),
                     Obx(() {
-                      final items = controller.filteredDuas;
+                      if (controller.selectedTab.value.toLowerCase() == 'adhkar') {
+                        if (controller.dhikrFetching.value) {
+                          return const SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
 
-                      if (items.isEmpty) {
-                        return SliverFillRemaining(
-                          hasScrollBody: false,
-                          child: Center(
-                            child: Text(
-                              'No supplications found'.tr,
-                              style: TextStyle(
-                                color: secondaryText,
-                                fontSize: 14,
-                              ),
+                        final items = controller.filteredDhikr;
+                        if (items.isEmpty) {
+                          return _emptyResults('No adhkar found'.tr);
+                        }
+
+                        return SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) => _buildDhikrTile(items[index]),
+                              childCount: items.length,
                             ),
                           ),
                         );
+                      }
+
+                      final items = controller.filteredDuas;
+                      if (controller.duaFetching.value) {
+                        return const SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                      if (items.isEmpty) {
+                        return _emptyResults('No supplications found'.tr);
                       }
 
                       return SliverPadding(
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                         sliver: SliverList(
                           delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              return _buildDuaTile(items[index]);
-                            },
+                            (context, index) => _buildDuaTile(items[index]),
                             childCount: items.length,
                           ),
                         ),
@@ -210,16 +226,16 @@ class DuasView extends GetView<DuasController> {
       () => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: controller.categories.map((category) {
+           children: controller.categories.map((category) {
             final selected = controller.selectedCategory.value == category;
 
             return GestureDetector(
               onTap: () => controller.selectCategory(category),
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
+                duration: const Duration(milliseconds: 400),
                 margin: const EdgeInsets.only(right: 10),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 19,
+                padding:   EdgeInsets.symmetric(
+                  horizontal: 7.w,
                   vertical: 11,
                 ),
                 decoration: BoxDecoration(
@@ -247,73 +263,71 @@ class DuasView extends GetView<DuasController> {
   }
 
   Widget _buildFeaturedCard() {
-    return GestureDetector(
-      onTap: () {
-        controller.selectCategory('Morning');
-      },
-      child: Container(
-        height: 154,
-        width: double.infinity,
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: const Color(0xFFE4D1AE),
-            width: 1,
-          ),
-          image: DecorationImage(
-            image: AssetImage(
-              AppAssets.homeScreenBanner,
-            ),
-            fit: BoxFit.cover,
-          ),
+    return Container(
+      height: 154,
+      width: double.infinity,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFFE4D1AE),
+          width: 1,
         ),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.72),
-                    ],
-                  ),
+        image: DecorationImage(
+          image: AssetImage(
+            AppAssets.homeScreenBanner,
+          ),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.72),
+                  ],
                 ),
               ),
             ),
-            Positioned(
-              left: 18,
-              right: 16,
-              bottom: 17,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Morning Adhkar'.tr,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
+          ),
+          Positioned(
+            left: 18,
+            right: 16,
+            bottom: 17,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${controller.selectedCategory.value} Adhkar'.tr,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '12 supplications'.tr,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 13,
-                          ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${controller.filteredDuas.length} supplications'.tr,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 13,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Container(
+                ),
+                GestureDetector(
+                  onTap: controller.changeCategory,
+                  child: Container(
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
@@ -326,11 +340,11 @@ class DuasView extends GetView<DuasController> {
                       size: 24,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -345,18 +359,228 @@ class DuasView extends GetView<DuasController> {
             color: AppColors.text,
           ),
         ),
-        Icon(
-          Icons.tune_rounded,
-          color: green,
-          size: 21,
-        ),
+
       ],
     );
   }
 
-  Widget _buildDuaTile(DuaModel dua) {
+  Widget _emptyResults(String message) {
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(AppAssets.searchNotFound, height: 7.h),
+            SizedBox(height: 4.h),
+            Text(message, style: TextStyle(color: secondaryText, fontSize: 14)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDhikrTile(AdhkarEntity dhikr) {
     return InkWell(
-      onTap: () => controller.openDua(dua),
+      onTap: () => _showDhikrDialog(dhikr),
+      borderRadius: BorderRadius.circular(15),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 13),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: AppColors.divider, width: 0.8),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                gradient: AppColors.goldGradient,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.auto_awesome_outlined,
+                color: AppColors.icon,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppText(
+                    'Dhikr ${dhikr.id}',
+                    type: AppTextType.bodyBold,
+                    color: AppColors.text,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    dhikr.arabic,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(fontSize: 15, color: secondaryText),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '× ${dhikr.repeatCount}',
+              style: TextStyle(
+                color: secondaryText,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.chevron_right_rounded, color: secondaryText),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showDhikrDialog(AdhkarEntity dhikr) {
+    _showRecitationDialog(
+      arabic: dhikr.arabic,
+      translation: dhikr.translation,
+      reference: dhikr.reference,
+      repeatCount: dhikr.repeatCount,
+    );
+  }
+
+  void _showDuaDialog(DuaEntity dua) {
+    _showRecitationDialog(
+      arabic: dua.arabic,
+      translation: dua.translation,
+      reference: dua.reference,
+    );
+  }
+
+  void _showRecitationDialog({
+    required String arabic,
+    required String translation,
+    required String reference,
+    int? repeatCount,
+  }) {
+    Get.dialog<void>(
+      Dialog(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: Container(
+              width: double.infinity,
+              height: 60.h,
+              decoration: BoxDecoration(
+                color: AppColors.background.withValues(alpha: 0.94),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.18),
+                    blurRadius: 28,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(22, 16, 22, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Read and recite'.tr,
+                            style: TextStyle(
+                              color: AppColors.text,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Get.back<void>(),
+                          icon: Icon(Icons.close, color: AppColors.text),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      arabic,
+                      textAlign: TextAlign.center,
+                      textDirection: TextDirection.rtl,
+                      style: TextStyle(
+                        color: AppColors.text,
+                        fontSize: 28,
+                        height: 2,
+                        fontFamily: 'Amiri',
+                      ),
+                    ),
+                    if (translation.isNotEmpty) ...[
+                      const SizedBox(height: 20),
+                      Text(
+                        translation,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: secondaryText,
+                          fontSize: 15,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                    if (repeatCount != null) ...[
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.accent.withValues(alpha: 0.18),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Text(
+                          '${'Repeat'.tr}: $repeatCount',
+                          style: TextStyle(
+                            color: AppColors.text,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (reference.isNotEmpty) ...[
+                      const SizedBox(height: 14),
+                      Text(
+                        reference,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: secondaryText, fontSize: 12),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+      barrierColor: Colors.black.withValues(alpha: 0.45),
+    );
+  }
+
+  Widget _buildDuaTile(DuaEntity dua) {
+    return InkWell(
+      onTap: () => _showDuaDialog(dua),
       borderRadius: BorderRadius.circular(15),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 13),
@@ -378,7 +602,7 @@ class DuasView extends GetView<DuasController> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                _iconFor(dua.iconKey),
+                _iconFor(dua.category.toString()),
                 color: AppColors.icon,
                 size: 22,
               ),
@@ -440,7 +664,11 @@ class DuasView extends GetView<DuasController> {
       case 'provision':
         return Icons.water_drop_outlined;
       case 'sleep':
-        return Icons.nightlight_outlined;
+        return Icons.bed;
+     case 'morning':
+        return Icons.sunny;
+     case 'evening':
+        return Icons.nightlight_rounded;
       default:
         return Icons.auto_awesome_outlined;
     }

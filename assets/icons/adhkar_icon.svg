@@ -1,0 +1,50 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+    <defs>
+        <linearGradient id="gold" x1="20" y1="15" x2="80" y2="85" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#E9C779"/>
+            <stop offset="1" stop-color="#B98738"/>
+        </linearGradient>
+        <linearGradient id="green" x1="25" y1="20" x2="75" y2="85" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#287356"/>
+            <stop offset="1" stop-color="#124633"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Outer ornamental frame -->
+    <path d="M50 9L57 16L67 14L72 23L82 27L81 38L90 46L85 56L88 67L77 73L74 84L62 84L50 92L38 84L26 84L23 73L12 67L15 56L10 46L19 38L18 27L28 23L33 14L43 16Z"
+        stroke="url(#gold)" stroke-width="2"
+        stroke-linejoin="round"/>
+
+    <!-- Tasbeeh loop -->
+    <path d="M50 25C34 25 24 37 24 51C24 67 35 78 50 78C65 78 76 67 76 51C76 37 66 25 50 25Z"
+        stroke="url(#green)" stroke-width="5"
+        stroke-linecap="round"/>
+
+    <!-- Beads -->
+    <g fill="url(#gold)">
+        <circle cx="50" cy="25" r="4"/>
+        <circle cx="66" cy="31" r="4"/>
+        <circle cx="75" cy="45" r="4"/>
+        <circle cx="74" cy="62" r="4"/>
+        <circle cx="62" cy="75" r="4"/>
+        <circle cx="45" cy="78" r="4"/>
+        <circle cx="30" cy="68" r="4"/>
+        <circle cx="24" cy="51" r="4"/>
+        <circle cx="33" cy="35" r="4"/>
+    </g>
+
+    <!-- Center ornamental diamond -->
+    <path d="M50 39L61 51L50 63L39 51L50 39Z"
+        fill="url(#green)" stroke="url(#gold)" stroke-width="1.8"
+        stroke-linejoin="round"/>
+
+    <path d="M50 45L55 51L50 57L45 51L50 45Z"
+        stroke="#E9C779" stroke-width="1.5"
+        stroke-linejoin="round"/>
+
+    <!-- Hanging bead detail -->
+    <path d="M50 79V85M46 86H54"
+        stroke="url(#gold)" stroke-width="2"
+        stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,41 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+    <defs>
+        <linearGradient id="gold" x1="20" y1="20" x2="80" y2="85" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#E9C779"/>
+            <stop offset="1" stop-color="#B98738"/>
+        </linearGradient>
+        <linearGradient id="cover" x1="25" y1="35" x2="75" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#236B50"/>
+            <stop offset="1" stop-color="#124633"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Open Quran pages -->
+    <path d="M50 39C42 30 29 27 14 30V70C29 67 42 71 50 80V39Z"
+        fill="#F7EEDC" stroke="url(#gold)" stroke-width="2.5"
+        stroke-linejoin="round"/>
+    <path d="M50 39C58 30 71 27 86 30V70C71 67 58 71 50 80V39Z"
+        fill="#F7EEDC" stroke="url(#gold)" stroke-width="2.5"
+        stroke-linejoin="round"/>
+
+    <!-- Book cover -->
+    <path d="M50 39V80" stroke="url(#gold)" stroke-width="2.5"
+        stroke-linecap="round"/>
+
+    <!-- Page lines -->
+    <path d="M22 40C32 39 40 42 45 47M22 49C32 48 40 51 45 56M22 58C32 57 40 60 45 65"
+        stroke="#B98738" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M78 40C68 39 60 42 55 47M78 49C68 48 60 51 55 56M78 58C68 57 60 60 55 65"
+        stroke="#B98738" stroke-width="1.5" stroke-linecap="round"/>
+
+    <!-- Decorative crescent -->
+    <path d="M50 12C41 19 41 31 50 36C44 35 37 29 37 22C37 15 43 10 50 12Z"
+        fill="url(#gold)"/>
+    <circle cx="57" cy="17" r="2" fill="#C89B4D"/>
+
+    <!-- Lower ornament -->
+    <path d="M35 84H65M42 89H58"
+        stroke="url(#gold)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M50 82L53 85L50 88L47 85Z" fill="url(#gold)"/>
+</svg>

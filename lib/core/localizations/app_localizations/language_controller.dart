@@ -47,7 +47,7 @@ class LanguageController  extends GetxController{
   Future<void> changeLang(Locale locale)async{
      selectedLocal.value = locale;
      final selectedLang = "${locale.languageCode}_${locale.countryCode}";
-     preferences.setString(StorageKeys.selectedLan, selectedLang);
+     await preferences.setString(StorageKeys.selectedLan, selectedLang);
      Get.updateLocale(locale);
   }
 }

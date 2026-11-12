@@ -1,7 +1,11 @@
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:qalbi/core/initial_binding/initial_binding.dart';
 import 'package:qalbi/core/localizations/app_localizations/language_controller.dart';
 import 'package:qalbi/core/routes_config/app_pages.dart';
 import 'package:qalbi/presentations/export.dart';
 import 'package:sizer/sizer.dart';
+import 'core/adhan_notification_service/adhan_notification_service.dart';
 import 'core/localizations/app_localizations/app_languages.dart';
 import 'core/localizations/app_localizations/app_translations.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -14,8 +18,24 @@ import 'core/theme/theme_controller.dart';
   final languageC = Get.put(LanguageController(), permanent: true);
   await languageC.loadLanguage();
   final themeC = Get.put(ThemeController(), permanent: true);
-    themeC.loadTheme();
-   runApp(  MyApp());
+  themeC.loadTheme();
+
+  final adhanService = AdhanNotificationService();
+
+  await adhanService.initialize();
+
+  Get.put<AdhanNotificationService>(
+    adhanService,
+    permanent: true,
+  );
+
+  await Hive.initFlutter();
+
+  await Hive.openBox('surahBox');
+  await Hive.openBox('juzBox');
+  await Hive.openBox('duaBox');
+  await Hive.openBox('adhkarBox');
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -32,6 +52,7 @@ class MyApp extends StatelessWidget {
       builder: (_, _, _) {
         return Obx(
           () => GetMaterialApp(
+            initialBinding: InitialBinding(),
             fallbackLocale: AppLanguages.english,
             translations: AppTraanslations(),
             locale: languageC.selectedLocal.value,
